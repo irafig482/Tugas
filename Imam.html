@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #ffffff;
+            height: 100vh;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar .nav-link {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .sidebar .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header .profile {
+            display: flex;
+            align-items: center;
+        }
+        .header .profile img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card .card-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card .card-body i {
+            font-size: 2rem;
+        }
+        .card .card-body .info {
+            text-align: right;
+        }
+        .form-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .form-container.active {
+            display: block;
+        }
+        .action-buttons button {
+            margin-right: 10px;
+        }
+        table {
+            margin-top: 20px;
+            width: 100%;
+        }
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="text-center mb-4">
+                <img alt="Logo Perusahaan" class="img-fluid" height="100" src="https://static.wikia.nocookie.net/naruto/images/6/61/AKATSUKI-Logo.png/revision/latest?cb=20140107035637" width="100"/>
+                <h5 class="mt-2">Akatsuki Klan</h5>
+            </div>
+            <div class="mb-4">
+                <p>Welcome, Imam Al Gifari</p>
+                <p>Administrator</p>
+            </div>
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="#" onclick="showForm('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <p class="text-muted mt-3">MENU KARYAWAN</p>
+                <a class="nav-link" href="#" onclick="showForm('karyawan')">
+                    <i class="fas fa-users"></i> Karyawan
+                </a>
+                <a class="nav-link" href="#" onclick="showForm('jabatan')">
+                    <i class="fas fa-briefcase"></i> Jabatan
+                </a>
+                <a class="nav-link" href="#" onclick="showForm('divisi')">
+                    <i class="fas fa-building"></i> Divisi
+                </a>
+                <p class="text-muted mt-3">MENU ABSENSI</p>
+                <a class="nav-link" href="#" onclick="showForm('absensi')">
+                    <i class="fas fa-calendar-check"></i> Absensi
+                </a>
+                <a class="nav-link" href="#" onclick="showForm('izin')">
+                    <i class="fas fa-calendar-times"></i> Izin
+                </a>
+                <a class="nav-link" href="#" onclick="showForm('lembur')">
+                    <i class="fas fa-clock"></i> Lembur
+                </a>
+                <p class="text-muted mt-3">MENU PENGGAJIAN</p>
+                <a class="nav-link" href="#" onclick="showForm('slipGaji')">
+                    <i class="fas fa-money-bill-wave"></i> Slip Gaji
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1">
+            <div class="header">
+                <h4>Sistem Informasi Manajemen Karyawan</h4>
+                <div class="profile">
+                    <span>Admin Dashboard</span>
+                    <img alt="Profile Picture" height="40" src="https://storage.googleapis.com/a1aa/image/fQN6z2iBmq1XMiwVwU6Q6KTkPCQcc2C0lsdERdHMAXLNsP2JA.jpg" width="40"/>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard -->
+                <div id="dashboard" class="form-container active">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <i class="fas fa-users"></i>
+                                    <div class="info">
+                                        <h5>Data Pegawai</h5>
+                                        <h3 id="dataPegawaiCount">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <div class="info">
+                                        <h5>Absensi Hari Ini</h5>
+                                        <h3>0</h3>
+                                        <p id="tanggalAbsensi">11 May 2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div class="info">
+                                        <h5>Izin Menunggu Konfirmasi</h5>
+                                        <h3>2</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <i class="fas fa-clock"></i>
+                                    <div class="info">
+                                        <h5>Lembur Menunggu Konfirmasi</h5>
+                                        <h3>1</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Data Karyawan -->
+                <div id="karyawan" class="form-container">
+                    <h4>Form Data Karyawan</h4>
+                    <form onsubmit="saveKaryawan(event)">
+                        <div class="mb-3">
+                            <label for="kodeKaryawan" class="form-label">Kode Karyawan</label>
+                            <input type="text" class="form-control" id="kodeKaryawan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="namaKaryawan" class="form-label">Nama Karyawan</label>
+                            <input type="text" class="form-control" id="namaKaryawan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="emailKaryawan" class="form-label">Email Karyawan</label>
+                            <input type="email" class="form-control" id="emailKaryawan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="alamatKaryawan" class="form-label">Alamat Karyawan</label>
+                            <input type="text" class="form-control" id="alamatKaryawan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jabatanKaryawan" class="form-label">Jabatan</label>
+                            <input type="text" class="form-control" id="jabatanKaryawan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="divisiKaryawan" class="form-label">Divisi</label>
+                            <input type="text" class="form-control" id="divisiKaryawan" required>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm('karyawan')">Batal</button>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Alamat</th>
+                                <th>Jabatan</th>
+                                <th>Divisi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="karyawanTableBody">
+                            <!-- Data Karyawan akan ditampilkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Form Jabatan -->
+                <div id="jabatan" class="form-container">
+                    <h4>Form Data Jabatan</h4>
+                    <form onsubmit="saveJabatan(event)">
+                        <div class="mb-3">
+                            <label for="kodeJabatan" class="form-label">Kode Jabatan</label>
+                            <input type="text" class="form-control" id="kodeJabatan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="namaJabatan" class="form-label">Nama Jabatan</label>
+                            <input type="text" class="form-control" id="namaJabatan" required>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm('jabatan')">Batal</button>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jabatanTableBody">
+                            <!-- Data Jabatan akan ditampilkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Form Divisi -->
+                <div id="divisi" class="form-container">
+                    <h4>Form Data Divisi</h4>
+                    <form onsubmit="saveDivisi(event)">
+                        <div class="mb-3">
+                            <label for="kodeDivisi" class="form-label">Kode Divisi</label>
+                            <input type="text" class="form-control" id="kodeDivisi" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="namaDivisi" class="form-label">Nama Divisi</label>
+                            <input type="text" class="form-control" id="namaDivisi" required>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm('divisi')">Batal</button>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="divisiTableBody">
+                            <!-- Data Divisi akan ditampilkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Form Absensi -->
+                <div id="absensi" class="form-container">
+                    <h4>Form Absensi</h4>
+                    <form onsubmit="saveAbsensi(event)">
+                        <div class="mb-3">
+                            <label for="kodeKaryawanAbsensi" class="form-label">Kode Karyawan</label>
+                            <input type="text" class="form-control" id="kodeKaryawanAbsensi" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tanggalAbsensiInput" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="tanggalAbsensiInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="statusAbsensi" class="form-label">Status</label>
+                            <select class="form-control" id="statusAbsensi" required>
+                                <option value="Hadir">Hadir</option>
+                                <option value="Izin">Izin</option>
+                                <option value="Alpa">Alpa</option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm('absensi')">Batal</button>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode Karyawan</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="absensiTableBody">
+                            <!-- Data Absensi akan ditampilkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Form Izin -->
+                <div id="izin" class="form-container">
+                    <h4>Form Izin</h4>
+                    <form onsubmit="saveIzin(event)">
+                        <div class="mb-3">
+                            <label for="kodeKaryawanIzin" class="form-label">Kode Karyawan</label>
+                            <input type="text" class="form-control" id="kodeKaryawanIzin" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tanggalIzin" class="form-label">Tanggal Izin</label>
+                            <input type="date" class="form-control" id="tanggalIzin" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="alasanIzin" class="form-label">Alasan Izin</label>
+                            <textarea class="form-control" id="alasanIzin" rows="3" required></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm('izin')">Batal</button>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode Karyawan</th>
+                                <th>Tanggal</th>
+                                <th>Alasan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="izinTableBody">
+                            <!-- Data Izin akan ditampilkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Form Lembur -->
+                <div id="lembur" class="form-container">
+                    <h4>Form Lembur</h4>
+                    <form onsubmit="saveLembur(event)">
+                        <div class="mb-3">
+                            <label for="kodeKaryawanLembur" class="form-label">Kode Karyawan</label>
+                            <input type="text" class="form-control" id="kodeKaryawanLembur" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tanggalLembur" class="form-label">Tanggal Lembur</label>
+                            <input type="date" class="form-control" id="tanggalLembur" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jamMulai" class="form-label">Jam Mulai</label>
+                            <input type="time" class="form-control" id="jamMulai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jamSelesai" class="form-label">Jam Selesai</label>
+                            <input type="time" class="form-control" id="jamSelesai" required>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm('lembur')">Batal</button>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode Karyawan</th>
+                                <th>Tanggal</th>
+                                <th>Jam Mulai</th>
+                                <th>Jam Selesai</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lemburTableBody">
+                            <!-- Data Lembur akan ditampilkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Form Slip Gaji -->
+                <div id="slipGaji" class="form-container">
+                    <h4>Form Slip Gaji</h4>
+                    <form onsubmit="generateSlipGaji(event)">
+                        <div class="mb-3">
+                            <label for="kodeKaryawanSlip" class="form-label">Kode Karyawan</label>
+                            <input type="text" class="form-control" id="kodeKaryawanSlip" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bulanGaji" class="form-label">Bulan Gaji</label>
+                            <input type="month" class="form-control" id="bulanGaji" required>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Generate Slip Gaji</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showForm(formId) {
+            const forms = document.querySelectorAll('.form-container');
+            forms.forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(formId).classList.add('active');
+        }
+
+        function clearForm(formId) {
+            const form = document.getElementById(formId);
+            form.querySelectorAll('input, textarea').forEach(input => {
+                input.value = '';
+            });
+            const tableBody = document.getElementById(formId + 'TableBody');
+            tableBody.innerHTML = '';
+        }
+
+        function saveKaryawan(event) {
+            event.preventDefault();
+            // Simpan data karyawan
+            const kodeKaryawan = document.getElementById('kodeKaryawan').value;
+            const namaKaryawan = document.getElementById('namaKaryawan').value;
+            const emailKaryawan = document.getElementById('emailKaryawan').value;
+            const alamatKaryawan = document.getElementById('alamatKaryawan').value;
+            const jabatanKaryawan = document.getElementById('jabatanKaryawan').value;
+            const divisiKaryawan = document.getElementById('divisiKaryawan').value;
+
+            const tableBody = document.getElementById('karyawanTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${kodeKaryawan}</td>
+                <td>${namaKaryawan}</td>
+                <td>${emailKaryawan}</td>
+                <td>${alamatKaryawan}</td>
+                <td>${jabatanKaryawan}</td>
+                <td>${divisiKaryawan}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Hapus</button></td>
+            `;
+            tableBody.appendChild(newRow);
+            clearForm('karyawan');
+        }
+
+        function deleteRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        function saveJabatan(event) {
+            event.preventDefault();
+            // Simpan data jabatan
+            const kodeJabatan = document.getElementById('kodeJabatan').value;
+            const namaJabatan = document.getElementById('namaJabatan').value;
+
+            const tableBody = document.getElementById('jabatanTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${kodeJabatan}</td>
+                <td>${namaJabatan}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Hapus</button></td>
+            `;
+            tableBody.appendChild(newRow);
+            clearForm('jabatan');
+        }
+
+        function saveDivisi(event) {
+            event.preventDefault();
+            // Simpan data divisi
+            const kodeDivisi = document.getElementById('kodeDivisi').value;
+            const namaDivisi = document.getElementById('namaDivisi').value;
+
+            const tableBody = document.getElementById('divisiTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${kodeDivisi}</td>
+                <td>${namaDivisi}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Hapus</button></td>
+            `;
+            tableBody.appendChild(newRow);
+            clearForm('divisi');
+        }
+
+        function saveAbsensi(event) {
+            event.preventDefault();
+            // Simpan data absensi
+            const kodeKaryawanAbsensi = document.getElementById('kodeKaryawanAbsensi').value;
+            const tanggalAbsensi = document.getElementById('tanggalAbsensiInput').value;
+            const statusAbsensi = document.getElementById('statusAbsensi').value;
+
+            const tableBody = document.getElementById('absensiTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${kodeKaryawanAbsensi}</td>
+                <td>${tanggalAbsensi}</td>
+                <td>${statusAbsensi}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Hapus</button></td>
+            `;
+            tableBody.appendChild(newRow);
+            clearForm('absensi');
+        }
+
+        function saveIzin(event) {
+            event.preventDefault();
+            // Simpan data izin
+            const kodeKaryawanIzin = document.getElementById('kodeKaryawanIzin').value;
+            const tanggalIzin = document.getElementById('tanggalIzin').value;
+            const alasanIzin = document.getElementById('alasanIzin').value;
+
+            const tableBody = document.getElementById('izinTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${kodeKaryawanIzin}</td>
+                <td>${tanggalIzin}</td>
+                <td>${alasanIzin}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Hapus</button></td>
+            `;
+            tableBody.appendChild(newRow);
+            clearForm('izin');
+        }
+
+        function saveLembur(event) {
+            event.preventDefault();
+            // Simpan data lembur
+            const kodeKaryawanLembur = document.getElementById('kodeKaryawanLembur').value;
+            const tanggalLembur = document.getElementById('tanggalLembur').value;
+            const jamMulai = document.getElementById('jamMulai').value;
+            const jamSelesai = document.getElementById('jamSelesai').value;
+
+            const tableBody = document.getElementById('lemburTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${kodeKaryawanLembur}</td>
+                <td>${tanggalLembur}</td>
+                <td>${jamMulai}</td>
+                <td>${jamSelesai}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Hapus</button></td>
+            `;
+            tableBody.appendChild(newRow);
+            clearForm('lembur');
+        }
+
+        function generateSlipGaji(event) {
+            event.preventDefault();
+            // Generate slip gaji (logic akan ditambahkan sesuai kebutuhan)
+            alert("Slip Gaji untuk Kode Karyawan: " + document.getElementById('kodeKaryawanSlip').value + " berhasil di-generate.");
+            clearForm('slipGaji');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
